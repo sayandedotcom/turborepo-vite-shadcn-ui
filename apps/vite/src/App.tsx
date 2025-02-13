@@ -1,22 +1,71 @@
+// src/App.tsx
 import { useState } from "react";
-import { Button } from "@repo/ui/components/ui/button";
-
-import "@repo/ui/globals.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Layout } from "./components/Layout/Layout";
+import { ExploreView } from "./components/Explore/ExploreView";
+import { PlaygroundView } from "./components/Playground/PlaygroundView";
+// import { TestView } from './components/Test/TestView';
+import { PreFillForm } from "./components/shared/PreFillForm";
+import { UserContext } from "./types";
+import { Toaster, toast } from "react-hot-toast";
+import { GoogleTagManager } from "./components/shared/GoogleTagManager";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [userContext, setUserContext] = useState<UserContext | null>(null);
+
+  const handleError = (message: string) => {
+    toast.error(message);
+  };
+
+  const handleSuccess = (message: string) => {
+    toast.success(message);
+  };
+
+  if (!userContext) {
+    return (
+      <div className="min-h-screen bg-background text-white p-4">
+        <PreFillForm onSubmit={(context) => setUserContext(context)} />
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold mb-2">This is a Vite application</h1>
-      <p className="mb-4">
-        This shadcn/ui button is shared between Vite, NextJS and any other
-        application.
-      </p>
-      <Button onClick={() => setCount((count) => count + 1)}>
-        Count is {count}
-      </Button>
-    </div>
+    <Router>
+      <GoogleTagManager />
+      <div className="min-h-screen bg-background text-white">
+        <Toaster position="top-right" />
+        <Layout>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ExploreView onError={handleError} userContext={userContext} />
+              }
+            />
+            <Route
+              path="/playground"
+              element={
+                <PlaygroundView
+                  onError={handleError}
+                  onSuccess={handleSuccess}
+                  userContext={userContext}
+                />
+              }
+            />
+            {/* <Route 
+              path="/test" 
+              element={
+                <TestView 
+                  onError={handleError}
+                  onSuccess={handleSuccess}
+                  userContext={userContext}
+                />
+              } 
+            /> */}
+          </Routes>
+        </Layout>
+      </div>
+    </Router>
   );
 }
 

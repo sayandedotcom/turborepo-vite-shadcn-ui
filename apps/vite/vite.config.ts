@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "node:path";
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
+  base: "/",
   plugins: [react()],
-  resolve: {
-    alias: {
-      "@ui": path.resolve(__dirname, "../../packages/ui/src"),
-    },
+  server: {
+    port: 3000,
+    open: true,
   },
 });
